@@ -11,7 +11,7 @@ c_lang_config = {
         "max_cpu_time": 3000,
         "max_real_time": 5000,
         "max_memory": 128 * 1024 * 1024,
-        "compile_command": "/usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c99 {src_path} -lm -o {exe_path}",
+        "compile_command": "/usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c99 {src_path} -fno-asm -mx32 -lm -o {exe_path}",
     },
     "run": {
         "command": "{exe_path}",
@@ -26,7 +26,7 @@ c_lang_spj_compile = {
     "max_cpu_time": 3000,
     "max_real_time": 5000,
     "max_memory": 1024 * 1024 * 1024,
-    "compile_command": "/usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c99 {src_path} -lm -o {exe_path}"
+    "compile_command": "/usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c99 {src_path} -fno-asm -mx32 -lm -o {exe_path}"
 }
 
 c_lang_spj_config = {
@@ -42,7 +42,7 @@ cpp_lang_config = {
         "max_cpu_time": 3000,
         "max_real_time": 5000,
         "max_memory": 128 * 1024 * 1024,
-        "compile_command": "/usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++11 {src_path} -lm -o {exe_path}",
+        "compile_command": "/usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++11 {src_path} -fno-gnu-keywords -mx32 -lm -o {exe_path}",
     },
     "run": {
         "command": "{exe_path}",
