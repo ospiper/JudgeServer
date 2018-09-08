@@ -71,9 +71,9 @@ def judge(problemID, lang, code, memoryLimit, timeLimit):
 
 
 def consume(ch, method, properties, body):
-    data = json.loads(body)
-    print(data)
-
+    data = json.loads(body.decode())
+    # print(data)
+    print('[CONSUME] Preparing for submission ' + data['submitID'] + '...')
     submitID = data['submitID']
     problemID = data['problemID']
     preJudge = requests.post('http://oj.ll-ap.cn:3000/judger/start',
@@ -90,10 +90,13 @@ def consume(ch, method, properties, body):
     if preJudgeData['err'] == '':
         memoryLimit = preJudgeData['memoryLimit']
         timeLimit = preJudgeData['timeLimit']
+        print('[JUDGE] Override limit settings: %d bytes of memory, %d ms of time.' % (memoryLimit, timeLimit))
+    print('[JUDGE] Start')
     judge_data = judge(problemID, data['compiler'], data['code'], memoryLimit, timeLimit)
     # print(judge_data)
     if not judge_data['err'] is None:
         # print("ERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR")
+        print('[ERROR] ' + judge_data['data'])
         ret = {
             'judger': 'HKReporter',
             'score': 0,
@@ -130,9 +133,13 @@ def consume(ch, method, properties, body):
             'results': judge_data['data'],
             'hash': '19260817'
         }
-    print(ret)
+        print('[JUDGE] Successfully judged submission ' + submitID)
+        print('[MSG] With score of %d' % (_score))
+    # print(ret)
+    print('[INFO] Sending results...')
     requests.post('http://oj.ll-ap.cn:3000/judger/judge/%s' % (submitID), json=ret)
     channel.basic_ack(delivery_tag=method.delivery_tag)
+    print('[INFO] Queue acked.')
 
 
 if __name__ == "__main__":
