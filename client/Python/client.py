@@ -1,7 +1,7 @@
 import hashlib
 import json
 import pika
-import sys
+import time
 import requests
 
 from languages import c_lang_config, cpp_lang_config, java_lang_config, c_lang_spj_config, \
@@ -73,7 +73,7 @@ def judge(problemID, lang, code, memoryLimit, timeLimit):
 def consume(ch, method, properties, body):
     data = json.loads(body.decode())
     # print(data)
-    print('[CONSUME] Preparing for submission ' + data['submitID'] + '...')
+    print('[' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + '][CONSUME] Preparing for submission ' + data['submitID'] + '...')
     submitID = data['submitID']
     problemID = data['problemID']
     preJudge = requests.post('http://oj.ll-ap.cn:3000/judger/start',
@@ -90,13 +90,13 @@ def consume(ch, method, properties, body):
     if preJudgeData['err'] == '':
         memoryLimit = preJudgeData['memoryLimit']
         timeLimit = preJudgeData['timeLimit']
-        print('[JUDGE] Override limit settings: %d bytes of memory, %d ms of time.' % (memoryLimit, timeLimit))
-    print('[JUDGE] Start')
+        print('[' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + '][JUDGE] Override limit settings: %d bytes of memory, %d ms of time.' % (memoryLimit, timeLimit))
+    print('[' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + '][JUDGE] Start running submission ' + submitID)
     judge_data = judge(problemID, data['compiler'], data['code'], memoryLimit, timeLimit)
     # print(judge_data)
     if not judge_data['err'] is None:
         # print("ERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR")
-        print('[ERROR] ' + judge_data['data'])
+        print('[' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + '][ERROR] ' + judge_data['data'])
         ret = {
             'judger': 'HKReporter',
             'score': 0,
@@ -133,13 +133,13 @@ def consume(ch, method, properties, body):
             'results': judge_data['data'],
             'hash': '19260817'
         }
-        print('[JUDGE] Successfully judged submission ' + submitID)
-        print('[MSG] With score of %d' % (_score))
+        print('[' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + '][JUDGE] Successfully judged submission ' + submitID)
+        print('[' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + '][JUDGE] With score of %d' % (_score))
     # print(ret)
-    print('[INFO] Sending results...')
+    print('[' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + '][INFO] Sending results...')
     requests.post('http://oj.ll-ap.cn:3000/judger/judge/%s' % (submitID), json=ret)
     channel.basic_ack(delivery_tag=method.delivery_tag)
-    print('[INFO] Queue acked.')
+    print('[' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + '][INFO] Queue acked.')
 
 
 if __name__ == "__main__":
@@ -163,9 +163,9 @@ if __name__ == "__main__":
 
     channel.basic_qos(prefetch_count=1)
     channel.basic_consume(consume, queue='apoj_submit_queue')
-    print('[INFO] Successfully started consuming... Press Ctrl+C to exit.')
+    print('[' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + '][INFO] Successfully started consuming... Press Ctrl+C to exit.')
     try:
         channel.start_consuming()
     except KeyboardInterrupt:
-        print('Keyboard Interrupted. Closing connection...')
+        print('[' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + '][INFO] Keyboard Interrupted. Closing connection...')
         connection.close()
