@@ -92,57 +92,59 @@ def consume(ch, method, properties, body):
         memoryLimit = preJudgeData['memoryLimit']
         timeLimit = preJudgeData['timeLimit']
         print('[' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + '][JUDGE] Override limit settings: %d bytes of memory, %d ms of time.' % (memoryLimit, timeLimit))
-    else:
-        if preJudgeData['err'] == 'force-cancelled':
-            print('[' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + '][JUDGE] Force cancelled.')
-        else:
-            print('[' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + '][JUDGE] Start running submission ' + submitID)
-            judge_data = judge(problemID, data['compiler'], data['code'], memoryLimit, timeLimit)
-            # print(judge_data)
-            if not judge_data['err'] is None:
-                # print("ERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR")
-                print('[' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + '][ERROR] ' + judge_data['data'])
-                ret = {
-                    'judger': JUDGER_NAME,
-                    'score': 0,
-                    'status': 6,
-                    'peakMemory': 0,
-                    'runtime': 0,
-                    'err': judge_data['data'],
-                    'results': None,
-                    'hash': '19260817'
-                }
-            else:
-                # print("SUCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC")
-                _score = 0
-                _status = 0
-                _time = 0
-                _memory = 0
-                _avgscore = 100 / len(judge_data['data'])
-                for item in judge_data['data']:
-                    _time = _time + item['cpu_time']
-                    _memory = max(_memory, item['memory'])
-                    if item['result'] == 0:
-                        _score = _score + _avgscore
-                    else:
-                        if _status == 0:
-                            _status = item['result']
 
-                ret = {
-                    'judger': JUDGER_NAME,
-                    'score': _score,
-                    'status': _status,
-                    'peakMemory': _memory,
-                    'runtime': _time,
-                    'err': judge_data['err'],
-                    'results': judge_data['data'],
-                    'hash': '19260817'
-                }
-                print('[' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + '][JUDGE] Successfully judged submission ' + submitID)
-                print('[' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + '][JUDGE] With score of %d' % (_score))
-            # print(ret)
-            print('[' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + '][INFO] Sending results...')
-            requests.post('http://oj.ll-ap.cn:3000/judger/judge/%s' % (submitID), json=ret)
+    if preJudgeData['err'] == 'force-cancelled':
+        print('[' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + '][JUDGE] Force cancelled.')
+    else:
+        print('[' + time.strftime("%Y-%m-%d %H:%M:%S",
+                                  time.localtime()) + '][JUDGE] Start running submission ' + submitID)
+        judge_data = judge(problemID, data['compiler'], data['code'], memoryLimit, timeLimit)
+        # print(judge_data)
+        if not judge_data['err'] is None:
+            # print("ERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR")
+            print('[' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + '][ERROR] ' + judge_data['data'])
+            ret = {
+                'judger': JUDGER_NAME,
+                'score': 0,
+                'status': 6,
+                'peakMemory': 0,
+                'runtime': 0,
+                'err': judge_data['data'],
+                'results': None,
+                'hash': '19260817'
+            }
+        else:
+            # print("SUCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC")
+            _score = 0
+            _status = 0
+            _time = 0
+            _memory = 0
+            _avgscore = 100 / len(judge_data['data'])
+            for item in judge_data['data']:
+                _time = _time + item['cpu_time']
+                _memory = max(_memory, item['memory'])
+                if item['result'] == 0:
+                    _score = _score + _avgscore
+                else:
+                    if _status == 0:
+                        _status = item['result']
+
+            ret = {
+                'judger': JUDGER_NAME,
+                'score': _score,
+                'status': _status,
+                'peakMemory': _memory,
+                'runtime': _time,
+                'err': judge_data['err'],
+                'results': judge_data['data'],
+                'hash': '19260817'
+            }
+            print('[' + time.strftime("%Y-%m-%d %H:%M:%S",
+                                      time.localtime()) + '][JUDGE] Successfully judged submission ' + submitID)
+            print('[' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + '][JUDGE] With score of %d' % (_score))
+        # print(ret)
+        print('[' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + '][INFO] Sending results...')
+        requests.post('http://oj.ll-ap.cn:3000/judger/judge/%s' % (submitID), json=ret)
     channel.basic_ack(delivery_tag=method.delivery_tag)
     print('[' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + '][INFO] Queue acked.')
 
