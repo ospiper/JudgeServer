@@ -98,8 +98,8 @@ def consume(ch, method, properties, body):
     else:
         print('[' + time.strftime("%Y-%m-%d %H:%M:%S",
                                   time.localtime()) + '][JUDGE] Start running submission ' + submitID)
-        judge_data = judge(problemID, data['compiler'], data['code'], memoryLimit, timeLimit)
-        # print(judge_data)
+        judge_data = judge(problemID, data['compiler'], data['code'], memoryLimit, timeLimit, output=True)
+        print(judge_data)
         if not judge_data['err'] is None:
             # print("ERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR")
             print('[' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + '][ERROR] ' + judge_data['data'])
