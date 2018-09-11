@@ -155,7 +155,7 @@ class JudgeClient(object):
         if self._output:
             try:
                 with open(user_output_file, "r", encoding="utf-8") as f:
-                    run_result["output"] = f.read()
+                    run_result["output"] = self._handle_output(f.read())
             except Exception:
                 pass
 
