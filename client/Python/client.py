@@ -67,7 +67,7 @@ def judge(problemID, lang, code, memoryLimit, timeLimit):
         max_cpu_time=timeLimit,
         max_memory=memoryLimit,
         test_case_id=problemID,
-        output=True
+        output=False
     )
 
 
