@@ -61,7 +61,7 @@ class JudgeClient(object):
 
     def _handle_output(self, output):
         ret = output.rstrip()
-        ret = self.re.sub('\n', ret)
+        ret = self.re_crlf.sub('\n', ret)
         ret = self.re_cr.sub('\n', ret)
         ret = self.re_eol.sub('\n', ret)
         return ret
