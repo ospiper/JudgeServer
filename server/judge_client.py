@@ -61,9 +61,9 @@ class JudgeClient(object):
 
     def _handle_output(self, output):
         ret = output.rstrip()
-        ret = self.re_crlf.sub(ret, '\n')
-        ret = self.re_cr.sub(ret, '\n')
-        ret = self.re_eol.sub(ret, '\n')
+        ret = self.re.sub('\n', ret)
+        ret = self.re_cr.sub('\n', ret)
+        ret = self.re_eol.sub('\n', ret)
         return ret
 
     def _compare_output(self, test_case_file_id):
