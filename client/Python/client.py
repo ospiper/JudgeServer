@@ -67,7 +67,7 @@ def judge(problemID, lang, code, memoryLimit, timeLimit):
         max_cpu_time=timeLimit,
         max_memory=memoryLimit,
         test_case_id=problemID,
-        output=False
+        output=True
     )
 
 
@@ -98,7 +98,7 @@ def consume(ch, method, properties, body):
     else:
         print('[' + time.strftime("%Y-%m-%d %H:%M:%S",
                                   time.localtime()) + '][JUDGE] Start running submission ' + submitID)
-        judge_data = judge(problemID, data['compiler'], data['code'], memoryLimit, timeLimit, output=True)
+        judge_data = judge(problemID, data['compiler'], data['code'], memoryLimit, timeLimit)
         print(judge_data)
         if not judge_data['err'] is None:
             # print("ERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR")
