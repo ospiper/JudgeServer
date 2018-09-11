@@ -2,6 +2,7 @@ import _judger
 import hashlib
 import json
 import os
+import re
 from multiprocessing import Pool
 
 import psutil
@@ -33,6 +34,10 @@ class JudgeClient(object):
         self._pool = Pool(processes=psutil.cpu_count())
         self._test_case_info = self._load_test_case_info()
 
+        self.re_eol = re.compile('(\s*\n)', re.I)
+        self.re_crlf = re.compile('(\r\n)')
+        self.re_cr = re.compile('(\r)')
+
         self._spj_version = spj_version
         self._spj_config = spj_config
         self._output = output
@@ -54,11 +59,18 @@ class JudgeClient(object):
     def _get_test_case_file_info(self, test_case_file_id):
         return self._test_case_info["test_cases"][test_case_file_id]
 
+    def _handle_output(self, output):
+        ret = output.rstrip()
+        ret = self.re_crlf.sub(ret, '\n')
+        ret = self.re_cr.sub(ret, '\n')
+        ret = self.re_eol.sub(ret, '\n')
+        return ret
+
     def _compare_output(self, test_case_file_id):
         user_output_file = os.path.join(self._submission_dir, str(test_case_file_id) + ".out")
         with open(user_output_file, "r", encoding="utf-8") as f:
             content = f.read()
-        output_md5 = hashlib.md5(content.rstrip().encode("utf-8")).hexdigest()
+        output_md5 = hashlib.md5(_handle_output(content).encode("utf-8")).hexdigest()
         result = output_md5 == self._get_test_case_file_info(test_case_file_id)["stripped_output_md5"]
         return output_md5, result
 
