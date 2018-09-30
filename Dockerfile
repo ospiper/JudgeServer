@@ -1,4 +1,4 @@
-FROM i386/ubuntu:16.04
+FROM ubuntu:16.04
 
 COPY build/java_policy /etc
 
